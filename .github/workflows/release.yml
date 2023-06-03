@@ -47,8 +47,8 @@ jobs:
         run: |
           mkdir "$FNEROUTER_PATH" "$FNEPARROT_PATH"
 
-          cp src/fnerouter/bin/Release/netcoreapp3.1/${{ matrix.runtime }}/publish/* "$FNEROUTER_PATH"
-          cp src/fneparrot/bin/Release/netcoreapp3.1/${{ matrix.runtime }}/publish/* "$FNEPARROT_PATH"
+          cp -r src/fnerouter/bin/Release/netcoreapp3.1/${{ matrix.runtime }}/publish/* "$FNEROUTER_PATH"
+          cp -r src/fneparrot/bin/Release/netcoreapp3.1/${{ matrix.runtime }}/publish/* "$FNEPARROT_PATH"
 
           zip -r fnerouter-${{ needs.setup.outputs.VERSION }}-${{ matrix.runtime }}.zip "$FNEROUTER_PATH"
           zip -r fneparrot-${{ needs.setup.outputs.VERSION }}-${{ matrix.runtime }}.zip "$FNEPARROT_PATH"
@@ -97,12 +97,21 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: fneparrot-${{ needs.setup.outputs.VERSION }}-${{ matrix.runtime }}
-      - name: Upload release asset
+      - name: Upload release asset (fnerouter)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: fnerouter-${{ needs.setup.outputs.VERSION }}-${{ matrix.runtime }}.zip
+          asset_name: fnerouter-${{ needs.setup.outputs.VERSION }}-${{ matrix.runtime }}.zip
+          asset_content_type: application/zip
+      - name: Upload release asset (fneparrot)
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.create-release.outputs.upload_url }}
           asset_path: fneparrot-${{ needs.setup.outputs.VERSION }}-${{ matrix.runtime }}.zip
-          asset_name: fnerouter-${{ needs.setup.outputs.VERSION }}-${{ matrix.runtime }}.zip
+          asset_name: fneparrot-${{ needs.setup.outputs.VERSION }}-${{ matrix.runtime }}.zip
           asset_content_type: application/zip
